@@ -1,22 +1,3 @@
-### AnyKernel3 Ramdisk Mod Script
-## osm0sis @ xda-developers
-## iambouttacum @ gacorprjkt
-
-### AnyKernel setup
-# global properties
-properties() { '
-kernel.string=
-do.devicecheck=0
-do.modules=0
-do.systemless=0
-do.cleanup=1
-do.cleanuponabort=1
-supported.versions=
-supported.patchlevels=
-supported.vendorpatchlevels=
-'; } # end properties
-
-
 ### AnyKernel install
 
 # boot shell variables
@@ -32,11 +13,19 @@ NO_MAGISK_CHECK=1;
 
 # variables
 supported=false
-supported_kver='5.10'
+# Loop to check if the current kernel version is in the supported_kvers list
+supported_kvers='5.10 6.1 6.6'
 
 # check current kernel version
 kernel_version=$(cat /proc/version | awk -F '-' '{print $1}' | awk '{print $3}' | cut -f1-2 -d'.')
-[ "$kernel_version" == "$supported_kver" ] && supported=true
+
+# 
+for ver in $supported_kvers; do
+  if [ "$kernel_version" == "$ver" ]; then
+    supported=true
+    break
+  fi
+done
 
 if ! $supported; then
   abort "- Unsupported kernel version: $kernel_version, abort."
