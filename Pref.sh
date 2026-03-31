@@ -1,11 +1,11 @@
-#!/system/bin/sh
+#!/sbin/sh
 # VorteX Esport - Kernel Preferences
+# Injected directly into ramdisk, triggered automatically by init.rc on boot
 
-# Wait until the boot is complete
-while [[ -z $(resetprop sys.boot_completed) ]]; do sleep 5; done
+# Short delay to let the system settle completely after boot
+sleep 30
 
 # ========== DISABLE THERMAL UNIVERSAL ==========
-sleep 30
 for thermal in $(resetprop | awk -F '[][]' '/thermal/ {print $2}'); do
   if [[ $(resetprop $thermal) == running ]]; then
     stop ${thermal/init.svc.} 2>/dev/null
