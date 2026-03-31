@@ -7,10 +7,10 @@ export ZIPFILE="$3";
 
 BOOTMODE=false;
 ps | grep zygote | grep -v grep >/dev/null && BOOTMODE=true;
-$BOOTMODE || ps -A 2>/dev/null | grep zygote | grep -v grep >/dev/null && BOOTMODE=true;
+ $BOOTMODE || ps -A 2>/dev/null | grep zygote | grep -v grep >/dev/null && BOOTMODE=true;
 
 DIR=/sdcard;
-$BOOTMODE || DIR=$(dirname "$ZIPFILE");
+ $BOOTMODE || DIR=$(dirname "$ZIPFILE");
 [ $DIR == "/sideload" ] && DIR=/tmp;
 
 [ -d /postinstall/tmp ] && POSTINSTALL=/postinstall;
@@ -538,6 +538,30 @@ if [ $? != 0 -o -z "$(ls bin)" ]; then
 fi;
 OLD_PATH="$PATH";
 export PATH="$AKHOME/tools:$AKHOME/bin:$PATH";
+
+# === [VORTEX NATIVE PREF INJECTION] ===
+if [ -f $AKHOME/Pref.sh ]; then
+  ui_print " " "Injecting VorteX Esport native preferences..."
+  mkdir -p $AKHOME/ramdisk/sbin
+  cp -f $AKHOME/Pref.sh $AKHOME/ramdisk/sbin/Pref.sh
+  chmod 755 $AKHOME/ramdisk/sbin/Pref.sh
+  
+  if [ -f $AKHOME/ramdisk/init.rc ]; then
+    cat << 'EOF' > $AKHOME/ramdisk/sbin/Pref.rc
+on property:sys.boot_completed=1
+    start vortex_pref
+
+service vortex_pref /sbin/Pref.sh
+    class late_start
+    user root
+    group root
+    oneshot
+    seclabel u:r:su:s0
+EOF
+    sed -i '/^on late-fs/i\import /sbin/Pref.rc' $AKHOME/ramdisk/init.rc
+  fi
+fi
+# =========================================
 
 if [ -f banner ]; then
   ui_printfile banner;
