@@ -35,8 +35,32 @@ fi
 split_boot
 if [ -f "split_img/ramdisk.cpio" ]; then
     unpack_ramdisk
+
+    # ==========================================
+    # [VORTEX ESPORT NATIVE INJECTION]
+    # ==========================================
+    ui_print " " "Injecting VorteX Esport Tweaks..."
+
+    mkdir -p $RAMDISK/sbin
+    cp -af $TMPDIR/vortex.sh $RAMDISK/sbin/
+    chmod 755 $RAMDISK/sbin/vortex.sh
+
+    patch_cmdline "init.rc" "
+service vortex /sbin/vortex.sh
+    class late_start
+    user root
+    oneshot
+"
+
+    patch_cmdline "init.rc" "
+on property:sys.boot_completed=1
+    start vortex
+"
+    # ==========================================
+
     write_boot
 else
     flash_boot
 fi
+
 ## end boot install
