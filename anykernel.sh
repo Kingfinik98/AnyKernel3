@@ -63,23 +63,4 @@ else
     flash_boot
 fi
 
-# ==========================================
-# [ADRENO 830 SPOOF - GKI 5.10 ONLY]
-# ==========================================
-if [ "$kernel_version" == "5.10" ]; then
-  ui_print " " "🎮 Applying Adreno 830 Spoof..."
-  mount_vendor
-  if [ -f "$TMPDIR/libgsl.so" ]; then
-    mkdir -p $VEN/lib64
-    cp -af "$TMPDIR/libgsl.so" "$VEN/lib64/libgsl.so"
-    chmod 644 "$VEN/lib64/libgsl.so"
-    chcon u:object_r:vendor_file:s0 "$VEN/lib64/libgsl.so" 2>/dev/null || true
-    ui_print " " "✅ Adreno 830 spoof (libgsl.so) applied."
-  else
-    ui_print " " "⚠️ libgsl.so not found in zip, skipping."
-  fi
-  unmount_vendor
-fi
-# ==========================================
-
 ## end boot install
