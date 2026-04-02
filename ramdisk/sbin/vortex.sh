@@ -74,10 +74,11 @@ done
 echo "0" > /proc/sys/kernel/sched_tunable_scaling 2>/dev/null
 echo "westwood" > /proc/sys/net/ipv4/tcp_congestion_control 2>/dev/null
 
-# ========== LMK & I/O ==========
+# ========== LMK & I/O (DYNAMIC GKI SCAN) ==========
 echo "2560,5120,11520,25600,35840,38400" > /sys/module/lowmemorykiller/parameters/minfree 2>/dev/null
-for queue in /sys/block/mmcblk*/queue; do
-  echo "deadline" > "$queue/scheduler" 2>/dev/null
+# Selaraskan dengan vortex_gki.c: Scan sd*, dm-*, dan nvme* (GKI Standard)
+for queue in /sys/block/sd*/queue /sys/block/dm-*/queue /sys/block/nvme*/queue; do
+  echo "mq-deadline" > "$queue/scheduler" 2>/dev/null
   echo "0" > "$queue/add_random" 2>/dev/null
   echo "0" > "$queue/iostats" 2>/dev/null
   echo "128" > "$queue/read_ahead_kb" 2>/dev/null
@@ -102,6 +103,7 @@ setprop debug.sf.high_fps_late_app_phase_offset_ns 100000 2>/dev/null
 setprop debug.sf.phase_offset_threshold_for_next_vsync_ns 6100000 2>/dev/null
 
 # ========== CPU & GPU GOVERNOR ==========
+# Universal GKI path (Snapdragon & Mediatek)
 for governor in /sys/devices/system/cpu/cpufreq/policy*/scaling_governor; do
   echo "performance" > "$governor" 2>/dev/null
 done
