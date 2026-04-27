@@ -37,9 +37,9 @@ if [ -f "split_img/ramdisk.cpio" ]; then
     unpack_ramdisk
 
     # ==========================================
-    # [VORTEX ESPORT NATIVE INJECTION]
+    # [Arkael Kernel NATIVE INJECTION]
     # ==========================================
-    ui_print " " "Injecting VorteX Esport Tweaks..."
+    ui_print " " "Injecting Arkael Kernel Tweaks..."
 
     mkdir -p $RAMDISK/sbin
     cp -af $TMPDIR/vortex.sh $RAMDISK/sbin/
